@@ -1,0 +1,34 @@
+version: '3.1'
+services:
+  dbpostgresql:
+    restart: always
+    image: postgres:16-alpine
+    environment:
+      - PG_TRUST_LOCALNET=true
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - PG_RUNDIR=/run/postgres
+      - PG_LOGDIR=/var/log/postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql
+      - logs:/var/log/postgresql
+
+
+  backend:
+    image: task-it-be
+    ports:
+      - "8080:8080"
+    depends_on:
+      - dbpostgresql
+      - redis
+  redis:
+    image: "redis:alpine"
+
+
+volumes:
+  data:
+  logs:
